@@ -46,6 +46,29 @@ export class NovelCompiler {
         return formatted;
     }
 
+    public nonCompile () {
+        // ルートパス取得
+        const rootPath: string = this._getRootPath();
+        // draftフォルダ確認　→ないならExit
+        if (!this._isExistsDraft(rootPath)) {
+            return "";
+        }
+        const draftPath: string = this._getDraftPath(rootPath);
+
+        // ファイルパスのリスト取得
+        const filePaths: FileInfo[] = this._getFilePaths(draftPath);
+
+        // テキストのリスト取得
+        const fileTexts: string[] = this._getDraftTexts(filePaths);
+
+        // フォーマットせず、そのまま返す
+        let documents = '';
+        for (const line of fileTexts) {
+            documents += line;
+        }
+        return documents;
+    }
+
     private _getRootPath (): string {
         if (vscode.workspace.name !== undefined && vscode.workspace.workspaceFolders !== undefined) {
             return vscode.workspace.workspaceFolders[0].uri.fsPath;

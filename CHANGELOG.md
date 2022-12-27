@@ -6,4 +6,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Initial release
+## [0.4.0] - 2022-12-27
+
+### Added
+
+- Plain output: document non-compiled output.
+
+## [0.3.0] - 2022-12-27
+
+### Added
+
+- Document compiler: for novel style format.
+- Document outputter: for output document.
+- Web novel output style.
+
+[unreleased]: https://github.com/nagisc007/vsce-novel-lighting/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/nagisc007/vsce-novel-lighting/compare/v0.4.0...v0.3.0
