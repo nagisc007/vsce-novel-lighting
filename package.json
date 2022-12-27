@@ -30,6 +30,10 @@
         "title": "Compile and Output as Novel style: 小説形式で出力"
       },
       {
+        "command": "NVL.build-to-web-novel",
+        "title": "Compile and Output as Web Novel style: WEB用の小説形式で出力"
+      },
+      {
         "command": "NVL.build-to-screenplay",
         "title": "(Unimplemented) Compile and Output as Screenplay style: シナリオ形式で出力"
       },
