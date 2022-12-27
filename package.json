@@ -2,7 +2,7 @@
   "name": "novel-lighting",
   "displayName": "novel-lighting",
   "description": "",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "N.T.WORKS",
   "repository": {
     "type": "git",
@@ -39,7 +39,7 @@
       },
       {
         "command": "NVL.build-to-plain",
-        "title": "(Unimplemented) Non Compile and Output as Plain text style: そのままの形式で出力"
+        "title": "Non Compile and Output as Plain text style: そのままの形式で出力"
       }
     ]
   },
