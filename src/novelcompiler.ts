@@ -110,62 +110,75 @@ export class NovelCompiler {
         return contents;
     }
 
+    private _beginHead1 = /^# .*/;
+    private _beginHead2 = /^## .*/;
+    private _beginHead3Over = /^###* .*/;
+    private _beginInstP = /^!P .*/;
+    private _beginBracket1 = /^「.*/;
+    private _beginBracket2 = /^『.*/;
+    private _beginBracket3 = /^（.*/;
+    private _beginScriptDialogue = /.*:.*/;
+    private _beginComment = /<!--.*-->>/;
+    private _endBracket1 = /.*」$/;
+    private _endBracket2 = /.*』$/;
+    private _endBracket3 = /.*）$/;
+
     private _convDocInfo (texts: string[]): DocInfo[] {
         let contents: DocInfo[] = [];
         let inDesc = false;
         let inDialogue = false;
+        let inScene = false;
         let _reset = (): void => {
             inDesc = false;
             inDialogue = false;
+            inScene = false;
         };
 
         for (const text of texts) {
             const lines = text.split('\n');
             for (const line of lines) {
-                if (line.match(/^# .*/)) {
+                if (this._beginHead1.test(line)) {
                     // # Head level 1: Title
                     contents.push({docType: "title", descs: [line]});
                     _reset();
-                } else if (line.match(/^## .*/)) {
+                } else if (this._beginHead2.test(line)) {
                     // ## Head level 2: Scene info
                     contents.push({docType: "scene", descs: [line]});
                     _reset();
-                } else if (line.match(/^###* .*/)) {
+                    inScene = true;
+                } else if (this._beginHead3Over.test(line)) {
                     // ### Head level 3: Sub info
                     contents.push({docType: "subinfo", descs: [line]});
                     _reset();
-                } else if (line.match(/^!P .*/)) {
+                } else if (this._beginInstP.test(line)) {
                     // !P Instruction(plan text)
-                    contents.push({docType: "plain", descs: [line]});
+                    contents.push({docType: "plain", descs: [line.slice(3)]});
                     _reset();
-                } else if (line.match(/^「.*/)) {
+                } else if (this._beginBracket1.test(line)) {
                     // 「Dialogue」
+                    // TODO: 「台詞」と思っていた。｜のような例の処理
                     _reset();
                     contents.push({docType: "dialogue", descs: [line]});
-                    if (!line.match(/.」$/)) {
-                        inDialogue = true;
-                    }
-                } else if (line.match(/^『.*/)) {
+                    inDialogue = true;
+                } else if (this._beginBracket2.test(line)) {
                     // 『Voice』
                     _reset();
                     contents.push({docType: "voice", descs: [line]});
-                    if (!line.match(/.』$/)) {
-                        inDialogue = true;
-                    }
-                } else if (line.match(/^（.*/)) {
+                    inDialogue = true;
+                } else if (this._beginBracket3.test(line)) {
                     // （Thought）
                     _reset();
                     contents.push({docType: "think", descs: [line]});
-                    if (!line.match(/.）$/)) {
-                        inDialogue = true;
-                    }
-                } else if (line.match(/.*:.*/)) {
+                    inDialogue = true;
+                } else if (this._beginScriptDialogue.test(line)) {
                     // Person: Dialogue (for Screenplay)
+                    _reset();
                     let data = line.split(':');
                     contents.push({docType: "dialogue", descs: [data[1]], subject: data[0]});
-                    _reset();
-                } else if (line.match(/<!--.*-->/)) {
+                    inDialogue = true;
+                } else if (this._beginComment.test(line)) {
                     // Comment
+                    // TODO: about internal comment?
                     contents.push({docType: "comment", descs: [line]});
                     _reset();
                 } else if (line !== "") {
@@ -180,8 +193,13 @@ export class NovelCompiler {
                     }
                 } else {
                     // Breakline
-                    contents.push({docType: "break", descs: []});
-                    _reset();
+                    if (inScene) {
+                        continue;
+                    } else if (inDialogue || inDesc) {
+                        _reset();
+                    } else {
+                        contents.push({docType: "break", descs: []});
+                    }
                 }
             }
         }
@@ -208,6 +226,8 @@ export class NovelCompiler {
                 // Scene
                 if (isScreenplay) {
                     formatted.push(this._convSceneInfoFromDesc(descs[0]));
+                } else {
+                    continue;
                 }
             } else if (info.docType === "subinfo") {
                 // Sub info
@@ -228,10 +248,12 @@ export class NovelCompiler {
                 // Comment
                 if (isShowComment) {
                     formatted.push(descs[0]);
+                } else {
+                    continue;
                 }
             } else if (info.docType === "break") {
                 // Break
-                formatted.push('\n');
+                formatted.push('');
             } else if (info.docType === "description") {
                 // Description
                 formatted.push('　' + this._completeDesc(descs));
@@ -298,7 +320,7 @@ export class NovelCompiler {
         for (const doc of documents) {
             if (style === 'default') {
                 // TODO: other style implement
-                formatted += doc;// + '\n';
+                formatted += doc + '\n';
             }
         }
         return formatted;
