@@ -24,13 +24,18 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("NVL.build-to-novel", async () => {
 			const doc: string = compiler.compile('novel');
 			outputter.isOutputSuccess(outputter.outputDocument(doc));
+			// ルビ版
 			const rubiDoc: string = rubi.addRubiToDocuments(doc);
+			outputter.isOutputSuccess(outputter.outputDocument(rubiDoc, '_rubi'));
 		})
 	);
 	context.subscriptions.push(
 		vscode.commands.registerCommand("NVL.build-to-web-novel", async () => {
 			const doc: string = compiler.compile('novel', 'web');
 			outputter.isOutputSuccess(outputter.outputDocument(doc));
+			// ルビ版
+			const rubiDoc: string = rubi.addRubiToDocuments(doc);
+			outputter.isOutputSuccess(outputter.outputDocument(rubiDoc, '_rubi'));
 		})
 	);
 	context.subscriptions.push(
