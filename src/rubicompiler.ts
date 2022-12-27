@@ -9,7 +9,6 @@ const yaml = require('js-yaml');
 export class RubiCompiler {
     
     public addRubiToDocuments (documents: string): string {
-        let formatted = '';
 
         console.log('NVL: rubi compile starting...');
 
@@ -39,6 +38,7 @@ export class RubiCompiler {
         const rubiData = this._getRubiData(filePaths);
 
         // ルビ置換
+        const formatted = this._compileDocumentWithRubi(documents, rubiData);
 
         console.log('NVL: rubi compile finished.');
 
@@ -66,7 +66,6 @@ export class RubiCompiler {
     private _getRubiData (filePaths: FileInfo[]): RubiInfo[] {
         let rubiData: RubiInfo[] = [];
         for (const info of filePaths) {
-            console.log("in rubi folder: " + info.dir);
             const yamlData = fs.readFileSync("" + info.dir, 'utf-8');
             if (yamlData) {
                 const data = yaml.load(yamlData);
@@ -81,6 +80,19 @@ export class RubiCompiler {
             }
         }
         return rubiData;
+    }
+
+    private _compileDocumentWithRubi (documents: string, rubiData: RubiInfo[]): string {
+        let compiled = documents;
+
+        for (const rubi of rubiData) {
+            //const rubiChar: string = rubi.rubi? rubi.rubi: '';
+            if (rubi.rubi && rubi.replace) {
+                compiled = compiled.replace(`${rubi.rubi}`, `${rubi.replace}`);
+            }
+        }
+
+        return compiled;
     }
 }
 
