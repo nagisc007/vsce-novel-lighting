@@ -32,7 +32,13 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 	context.subscriptions.push(
 		vscode.commands.registerCommand("NVL.build-to-screenplay", async () => {
-			const doc: string = compiler.compile('screenplay');
+			const doc: string = compiler.compile('screenplay', 'screenplay');
+			outputter.isOutputSuccess(outputter.outputDocument(doc));
+		})
+	);
+	context.subscriptions.push(
+		vscode.commands.registerCommand("NVL.build-to-audiodrama", async () => {
+			const doc: string = compiler.compile('screenplay', 'audiodrama');
 			outputter.isOutputSuccess(outputter.outputDocument(doc));
 		})
 	);
