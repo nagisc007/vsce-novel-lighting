@@ -5,7 +5,7 @@ import * as path from "path";
 
 export class Outputter {
 
-    public outputDocument (doc: string): boolean {
+    public outputDocument (doc: string, fileSuffix: string = ''): boolean {
 
         console.log('NVL: output document starting...');
         // ビルドパス取得
@@ -18,7 +18,7 @@ export class Outputter {
         // TODO: プロジェクト情報取得
 
         // ファイル名作成
-        const fileName: string = this._createOutputFileName('output');
+        const fileName: string = this._createOutputFileName('output' + fileSuffix);
 
         // ファイル書き込み
         const isSuccess: boolean = this._writeOutputDocument(
