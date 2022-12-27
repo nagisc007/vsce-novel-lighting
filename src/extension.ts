@@ -25,6 +25,12 @@ export function activate(context: vscode.ExtensionContext) {
 		})
 	);
 	context.subscriptions.push(
+		vscode.commands.registerCommand("NVL.build-to-web-novel", async () => {
+			const doc: string = compiler.compile('novel', 'web');
+			outputter.isOutputSuccess(outputter.outputDocument(doc));
+		})
+	);
+	context.subscriptions.push(
 		vscode.commands.registerCommand("NVL.build-to-screenplay", async () => {
 			const doc: string = compiler.compile('screenplay');
 			outputter.isOutputSuccess(outputter.outputDocument(doc));

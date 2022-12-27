@@ -6,7 +6,12 @@ import * as path from "path";
 /** 小説形式コンパイル用クラス */
 export class NovelCompiler {
 
-    public compile (style: string, isShowComment: boolean = false): string {
+    public compile (
+        style: string,
+        formatStyle: string = 'default',
+        isShowComment: boolean = false
+        ): string {
+        // members
         let compiledDoc = "";
 
         console.log('NVL: compile starting...');
@@ -34,7 +39,7 @@ export class NovelCompiler {
             docInfos, isScreenplay, isShowComment);
 
         // 最終フォーマット整形
-        const formatted: string = this._formatDocument(preformatted);
+        const formatted: string = this._formatDocument(preformatted, formatStyle);
 
         console.log('NVL: compiled success!');
 
@@ -119,9 +124,6 @@ export class NovelCompiler {
     private _beginBracket3 = /^（.*/;
     private _beginScriptDialogue = /.*:.*/;
     private _beginComment = /<!--.*-->>/;
-    private _endBracket1 = /.*」$/;
-    private _endBracket2 = /.*』$/;
-    private _endBracket3 = /.*）$/;
 
     private _convDocInfo (texts: string[]): DocInfo[] {
         let contents: DocInfo[] = [];
@@ -317,10 +319,57 @@ export class NovelCompiler {
 
     private _formatDocument (documents: string[], style: string = 'default'): string {
         let formatted = "";
-        for (const doc of documents) {
-            if (style === 'default') {
-                // TODO: other style implement
-                formatted += doc + '\n';
+        if (style === 'default') {
+            // default breakline
+            formatted = this._formatAsDefault(documents);
+        } else if (style === 'web') {
+            // web style breakline
+            // NOTE:
+            //      文章と台詞の間は１行空行
+            formatted = this._formatAsWebNovel(documents);
+        }
+        return formatted;
+    }
+
+    private _formatAsDefault (documents: string[]): string {
+        let formatted: string = "";
+        for (const line of documents) {
+            formatted += line + '\n';
+        }
+        return formatted;
+    }
+
+    private _formatAsWebNovel (documents: string[]): string {
+        let formatted: string = "";
+        let inDesc = false;
+        let inDialogue = false;
+
+        for (const line of documents) {
+            if (this._beginBracket1.test(line)) {
+                if (inDialogue) {
+                    formatted += line + '\n';
+                } else {
+                    inDialogue = true;
+                    formatted += '\n' + line + '\n';
+                }
+                inDesc = false;
+            } else if (this._beginHead1.test(line)) {
+                if (!formatted) {
+                    formatted = line + '\n\n';
+                } else {
+                    formatted += '\n' + line + '\n';
+                }
+                inDesc = inDialogue = false;
+            } else if (line) {
+                if (inDesc) {
+                    formatted += line + '\n';
+                } else {
+                    inDesc = true;
+                    formatted += '\n' + line + '\n';
+                }
+                inDialogue = false;
+            } else {
+                formatted += line + '\n';
             }
         }
         return formatted;
