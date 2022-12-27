@@ -16,10 +16,7 @@
   ],
   "activationEvents": [
     "onLanguage:markdown",
-    "onLanguage:plaintext",
-    "onCommand:NVL.build-to-novel",
-    "onCommand:NVL.build-to-screenplay",
-    "onCommand::NVL.build-to-plain"
+    "onLanguage:plaintext"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -34,11 +31,11 @@
       },
       {
         "command": "NVL.build-to-screenplay",
-        "title": "Compile and Output as Screenplay style: シナリオ形式で出力"
+        "title": "(Unimplemented) Compile and Output as Screenplay style: シナリオ形式で出力"
       },
       {
         "command": "NVL.build-to-plain",
-        "title": "Non Compile and Output as Plain text style: そのままの形式で出力"
+        "title": "(Unimplemented) Non Compile and Output as Plain text style: そのままの形式で出力"
       }
     ]
   },
