@@ -146,6 +146,8 @@ export class NovelCompiler {
     private _beginBracket2 = /^『.*/;
     private _beginBracket3 = /^（.*/;
     private _beginScriptDialogue = /.*:.*/;
+    private _beginScriptNarration = /^N:.*/;
+    private _beginScriptMonologue = /^.*M:.*/;
     private _beginComment = /<!--.*-->>/;
 
     private _convDocInfo (texts: string[]): DocInfo[] {
@@ -199,7 +201,19 @@ export class NovelCompiler {
                     // Person: Dialogue (for Screenplay)
                     _reset();
                     let data = line.split(':');
-                    contents.push({docType: "dialogue", descs: [data[1]], subject: data[0]});
+                    contents.push({docType: "dialogue", descs: [data[1]], subject: data[0] + '「'});
+                    inDialogue = true;
+                } else if (this._beginScriptNarration.test(line)) {
+                    // N: Narration (for Screenplay)
+                    _reset();
+                    let data = line.split(':');
+                    contents.push({docType: "narration", descs: [data[1]], subject: 'Ｎ「'});
+                    inDialogue = true;
+                } else if (this._beginScriptMonologue.test(line)) {
+                    // Person-M: Monologue (for Screenplay)
+                    _reset();
+                    let data = line.split('M:');
+                    contents.push({docType: "monologue", descs: [data[1]], subject: data[0] + 'Ｍ「'});
                     inDialogue = true;
                 } else if (this._beginComment.test(line)) {
                     // Comment
@@ -262,13 +276,38 @@ export class NovelCompiler {
                 formatted.push(descs[0]);
             } else if (info.docType === "dialogue") {
                 // Dialogue
-                formatted.push(this._completeDialogue(descs));
+                let doc = this._completeDialogue(descs);
+                if (isScreenplay) {
+                    let subject = info.subject ? info.subject: '？';
+                    doc = subject + doc;
+                }
+                formatted.push(doc);
+            } else if (info.docType === "narration") {
+                // Narration
+                let doc = this._completeDialogue(descs);
+                let subject = info.subject ? info.subject: 'Ｎ';
+                formatted.push(subject + doc);
+            } else if (info.docType === "monologue") {
+                // Monologue
+                let doc = this._completeDialogue(descs);
+                let subject = info.subject ? info.subject: 'Ｍ';
+                formatted.push(subject + doc);
             } else if (info.docType === "voice") {
                 // Voice
-                formatted.push(this._completeDialogue(descs, '』'));
+                let doc = this._completeDialogue(descs, '』');
+                if (isScreenplay) {
+                    let subject = info.subject ? info.subject: '？';
+                    doc = subject + doc;
+                }
+                formatted.push(doc);
             } else if (info.docType === "think") {
                 // Think
-                formatted.push(this._completeDialogue(descs, '）'));
+                let doc = this._completeDialogue(descs, '）');
+                if (isScreenplay) {
+                    let subject = info.subject ? info.subject: '';
+                    doc = subject + 'Ｍ' + doc;
+                }
+                formatted.push(doc);
             } else if (info.docType === "comment") {
                 // Comment
                 if (isShowComment) {
@@ -350,6 +389,12 @@ export class NovelCompiler {
             // NOTE:
             //      文章と台詞の間は１行空行
             formatted = this._formatAsWebNovel(documents);
+        } else if (style === 'screenplay') {
+            // screenplay style
+            formatted = this._formatAsScreenplay(documents);
+        } else if (style === 'audiodrama') {
+            // audio drama style
+            console.log('NVL: unimplement audio drama style.');
         }
         return formatted;
     }
@@ -395,6 +440,40 @@ export class NovelCompiler {
                 formatted += line + '\n';
             }
         }
+        return formatted;
+    }
+
+    private _beginNarration = /^Ｎ「/;
+    private _beginMonologue = /^.*Ｍ「/;
+    private _beginScreenplayDialogue = /^.*「/;
+    private _beginSceneSpin = /^○.*/;
+    private _beginScreenplayDesc = /^　.*/;
+
+    private _formatAsScreenplay (documents: string[]): string {
+        let formatted: string = '';
+
+        for (const line of documents) {
+            if (this._beginHead1.test(line)) {
+                if (!formatted) {
+                    formatted = line + '\n\n';
+                } else {
+                    formatted += '\n' + line + '\n';
+                }
+            } else if (this._beginSceneSpin.test(line)) {
+                formatted += '\n' + line + '\n';
+            } else if (this._beginNarration.test(line)) {
+                formatted += line + '\n';
+            } else if (this._beginMonologue.test(line)) {
+                formatted += line + '\n';
+            } else if (this._beginScreenplayDialogue.test(line)) {
+                formatted += line + '\n';
+            } else if (this._beginScreenplayDesc.test(line)) {
+                formatted += '　' + line + '\n';
+            } else if (line) {
+                formatted += line + '\n';
+            }
+        }
+
         return formatted;
     }
 }
