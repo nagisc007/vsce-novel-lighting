@@ -6,6 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.7.0] - 2022-12-27
+
+### Added
+
+- Rubi replacement on Novel compile.
+
 ## [0.6.0] - 2022-12-27
 
 ### Added
@@ -32,7 +38,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Document outputter: for output document.
 - Web novel output style.
 
-[unreleased]: https://github.com/nagisc007/vsce-novel-lighting/compare/v0.6.0...HEAD
+[unreleased]: https://github.com/nagisc007/vsce-novel-lighting/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/nagisc007/vsce-novel-lighting/compare/v0.7.0...v0.6.0
 [0.6.0]: https://github.com/nagisc007/vsce-novel-lighting/compare/v0.6.0...v0.5.0
 [0.5.0]: https://github.com/nagisc007/vsce-novel-lighting/compare/v0.5.0...v0.4.0
 [0.4.0]: https://github.com/nagisc007/vsce-novel-lighting/compare/v0.4.0...v0.3.0

@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import { CharCounter, CharCountUpdater } from './charcounter';
 import { NovelCompiler } from './novelcompiler';
 import { Outputter } from './outputter';
+import { RubiCompiler } from './rubicompiler';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('novel-lighting activate.');
@@ -12,6 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const countUpdater = new CharCountUpdater(counter);
 	const compiler = new NovelCompiler();
 	const outputter = new Outputter();
+	const rubi = new RubiCompiler();
 
 	// 登録
 	context.subscriptions.push(countUpdater);
@@ -22,12 +24,18 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("NVL.build-to-novel", async () => {
 			const doc: string = compiler.compile('novel');
 			outputter.isOutputSuccess(outputter.outputDocument(doc));
+			// ルビ版
+			const rubiDoc: string = rubi.addRubiToDocuments(doc);
+			outputter.isOutputSuccess(outputter.outputDocument(rubiDoc, '_rubi'));
 		})
 	);
 	context.subscriptions.push(
 		vscode.commands.registerCommand("NVL.build-to-web-novel", async () => {
 			const doc: string = compiler.compile('novel', 'web');
 			outputter.isOutputSuccess(outputter.outputDocument(doc));
+			// ルビ版
+			const rubiDoc: string = rubi.addRubiToDocuments(doc);
+			outputter.isOutputSuccess(outputter.outputDocument(rubiDoc, '_rubi'));
 		})
 	);
 	context.subscriptions.push(
