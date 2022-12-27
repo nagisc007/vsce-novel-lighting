@@ -248,37 +248,46 @@ export class NovelCompiler {
         return scene;
     }
 
+    private regEndDesc = /(。|、)$/;
+    private regEndBracket = /(」|』|）)$/;
+    private regEndMark = /(！|？)$/;
+    private regEndMarkSpace = /(！|？)　$/;
+    private regEndMaru = /。$/;
+
     private _completeDialogue (descs: string[], bracket: string = '」'): string {
         let docs = "";
         for (const desc of descs) {
-            if (desc.match(/.*(。｜、)$/)) {
+            if (this.regEndDesc.test(desc)) {
                 docs += desc;
-            } else if (desc.match(/.*(！|？)$/)) {
+            } else if (this.regEndMark.test(desc)) {
                 docs += desc + '　';
+            } else if (this.regEndBracket.test(desc)) {
+                docs += desc;
             } else if (desc) {
                 docs += desc + "。";
             }
         }
-        if (docs.match(/.*(！|？)　$/)) {
+        if (this.regEndMarkSpace.test(docs)) {
             docs = docs.slice(0, -1) + bracket;
-        } else if (docs.match(/.*。$/)) {
+        } else if (this.regEndMaru.test(docs)) {
             docs = docs.slice(0, -1) + bracket;
         }
         return docs;
     }
 
+
     private _completeDesc (descs: string[]): string {
         let docs = "";
         for (const desc of descs) {
-            if (desc.match(/.*(。｜、)$/)) {
+            if (this.regEndDesc.test(desc)) {
                 docs += desc;
-            } else if (desc.match(/.*(！|？)$/)) {
+            } else if (this.regEndMark.test(desc)) {
                 docs += desc + '　';
             } else if (desc) {
                 docs += desc + "。";
             }
         }
-        if (docs.match(/.*(！|？)　$/)) {
+        if (this.regEndMarkSpace.test(docs)) {
             docs = docs.slice(0, -1);
         }
         return docs;
@@ -289,7 +298,7 @@ export class NovelCompiler {
         for (const doc of documents) {
             if (style === 'default') {
                 // TODO: other style implement
-                formatted += doc + '\n';
+                formatted += doc;// + '\n';
             }
         }
         return formatted;

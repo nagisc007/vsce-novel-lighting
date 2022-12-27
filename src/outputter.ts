@@ -7,7 +7,7 @@ export class Outputter {
 
     public outputDocument (doc: string): boolean {
 
-        console.log('NVL: output document starting...:' + doc);
+        console.log('NVL: output document starting...');
         // ビルドパス取得
         const rootPath: string = this._getRootPath();
         if (!rootPath) {
