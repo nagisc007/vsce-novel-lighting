@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 	context.subscriptions.push(
 		vscode.commands.registerCommand("NVL.build-to-plain", async () => {
-			const doc: string = compiler.compile('plain');
+			const doc: string = compiler.nonCompile();
 			outputter.isOutputSuccess(outputter.outputDocument(doc));
 		})
 	);
