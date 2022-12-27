@@ -2,7 +2,7 @@
   "name": "novel-lighting",
   "displayName": "novel-lighting",
   "description": "",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "N.T.WORKS",
   "repository": {
     "type": "git",
@@ -35,7 +35,11 @@
       },
       {
         "command": "NVL.build-to-screenplay",
-        "title": "(Unimplemented) Compile and Output as Screenplay style: シナリオ形式で出力"
+        "title": "Compile and Output as Screenplay style: シナリオ形式で出力"
+      },
+      {
+        "command": "NVL.build-to-audiodrama",
+        "title": "(Unimplemented) Compile and Output as Audio Drama Script style: オーディオドラマシナリオ形式で出力"
       },
       {
         "command": "NVL.build-to-plain",
