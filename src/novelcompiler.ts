@@ -394,7 +394,7 @@ export class NovelCompiler {
             formatted = this._formatAsScreenplay(documents);
         } else if (style === 'audiodrama') {
             // audio drama style
-            console.log('NVL: unimplement audio drama style.');
+            formatted = this._formatAsAudioDrama(documents);
         }
         return formatted;
     }
@@ -461,6 +461,34 @@ export class NovelCompiler {
                 }
             } else if (this._beginSceneSpin.test(line)) {
                 formatted += '\n' + line + '\n';
+            } else if (this._beginNarration.test(line)) {
+                formatted += line + '\n';
+            } else if (this._beginMonologue.test(line)) {
+                formatted += line + '\n';
+            } else if (this._beginScreenplayDialogue.test(line)) {
+                formatted += line + '\n';
+            } else if (this._beginScreenplayDesc.test(line)) {
+                formatted += '　' + line + '\n';
+            } else if (line) {
+                formatted += line + '\n';
+            }
+        }
+
+        return formatted;
+    }
+
+    private _formatAsAudioDrama (documents: string[]): string {
+        let formatted: string = '';
+
+        for (const line of documents) {
+            if (this._beginHead1.test(line)) {
+                if (!formatted) {
+                    formatted = line + '\n\n';
+                } else {
+                    formatted += '\n' + line + '\n';
+                }
+            } else if (this._beginSceneSpin.test(line)) {
+                continue;
             } else if (this._beginNarration.test(line)) {
                 formatted += line + '\n';
             } else if (this._beginMonologue.test(line)) {
