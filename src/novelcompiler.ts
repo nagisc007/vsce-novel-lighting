@@ -233,6 +233,7 @@ export class NovelCompiler {
                 } else {
                     // Breakline
                     if (inScene) {
+                        inScene = false;
                         continue;
                     } else if (inDialogue || inDesc) {
                         _reset();
