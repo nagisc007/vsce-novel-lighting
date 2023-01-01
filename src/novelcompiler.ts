@@ -335,8 +335,7 @@ export class NovelCompiler {
         return scene;
     }
 
-    private regEndDesc = /(。|、)$/;
-    private regEndBracket = /(」|』|）)$/;
+    private regEndDesc = /(。|、|！|？|」|』|）)$/;
     private regEndMark = /(！|？)$/;
     private regEndMarkSpace = /(！|？)　$/;
     private regEndMaru = /。$/;
@@ -348,8 +347,6 @@ export class NovelCompiler {
                 docs += desc;
             } else if (this.regEndMark.test(desc)) {
                 docs += desc + '　';
-            } else if (this.regEndBracket.test(desc)) {
-                docs += desc;
             } else if (desc) {
                 docs += desc + "。";
             }
