@@ -1,5 +1,7 @@
 "use strict";
 import * as vscode from "vscode";
+import * as fs from "fs";
+import { getRootPath, getFilePaths, FileInfo } from "./common";
 
 /** （使用中のファイルの）文字数カウント用クラス */
 export class CharCounter {
@@ -17,18 +19,64 @@ export class CharCounter {
             this.hide();
             return; // カウントするファイルでない　→EXIT
         }
+        // TODO: 選択中のフォルダのみにする
 
         const text = this._getCurrentText(editor);
         const compText = this._compileText(text);
         const count = this._countText(compText);
 
-        this.show(count);
+        const rootPath: string = this._getRootPath();
+        const draftPath: string = this._getDraftPath(rootPath ? rootPath: "");
+        const textFiles = this.getAllTextFiles(draftPath);
+        let total = 0;
+        textFiles.forEach((file) => {
+          const contents = fs.readFileSync(file).toString();
+          total += contents.length;
+        });
+
+        this.show(count, total);
     }
 
-    public show (count: number): void {
+    private _getRootPath (): string {
+        if (vscode.workspace.name !== undefined && vscode.workspace.workspaceFolders !== undefined) {
+            return vscode.workspace.workspaceFolders[0].uri.fsPath;
+        } else {
+            return "";
+        }
+    }
+    private _getDraftPath (path: string): string {
+        const lower = path + '/draft';
+        const upper = path + '/Draft';
+        if (fs.existsSync(lower)) {
+            return lower;
+        } else {
+            return upper;
+        }
+    }
+
+    public getAllTextFiles(folderPath: string): string[] {
+        const files = fs.readdirSync(folderPath);
+        let textFiles: string[] = [];
+      
+        files.forEach((file) => {
+          const fullPath = `${folderPath}/${file}`;
+          const stats = fs.statSync(fullPath);
+          if (stats.isDirectory()) {
+            textFiles.push(...this.getAllTextFiles(fullPath));
+          } else {
+            const extension = file.split('.').pop()?.toLowerCase();
+            if (extension === 'txt' || extension === 'md') {
+              textFiles.push(fullPath);
+            }
+          }
+        });
+        return textFiles;
+    }
+      
+    public show (count: number, total: number): void {
         const sbarItem = this._getStatusBarItem();
         // 文字数をステータスバーに出力し、表示
-        sbarItem.text = count !== 1 ? `$(pencil) ${count}c`: `$(pencil)1c`;
+        sbarItem.text = count !== 1 ? `$(pencil) ${count}c/${total}c`: `$(pencil)1c/${total}c`;
         sbarItem.show();
     }
 
