@@ -2,6 +2,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+import { getRootPath, getFilePaths, FileInfo } from "./common";
 
 /** 小説形式コンパイル用クラス */
 export class NovelCompiler {
@@ -25,7 +26,7 @@ export class NovelCompiler {
         const draftPath: string = this._getDraftPath(rootPath);
 
         // ファイルパスのリスト取得
-        const filePaths: FileInfo[] = this._getFilePaths(draftPath);
+        const filePaths: FileInfo[] = getFilePaths(draftPath, ['.txt', '.md']);//this._getFilePaths(draftPath);
 
         // テキストのリスト取得
         const fileTexts: string[] = this._getDraftTexts(filePaths);
@@ -56,7 +57,7 @@ export class NovelCompiler {
         const draftPath: string = this._getDraftPath(rootPath);
 
         // ファイルパスのリスト取得
-        const filePaths: FileInfo[] = this._getFilePaths(draftPath);
+        const filePaths: FileInfo[] = getFilePaths(draftPath, ['.txt', '.md']);//this._getFilePaths(draftPath);
 
         // テキストのリスト取得
         const fileTexts: string[] = this._getDraftTexts(filePaths);
@@ -104,12 +105,13 @@ export class NovelCompiler {
         for (const dirent of filesInDirs) {
             if (dirent.isDirectory()) {
                 // Directory処理
-                // TODO: 再帰的処理
-                files.push({
-                    fileType: "dir",
-                    dir: path.join(dirPath, dirent.name),
-                    name: dirent.name,
-                });
+                // TODO: 再帰的処理→これはできるようになったが何故かファイルの方が順序が先に処理されている
+                files.push(...this._getFilePaths(path.join(dirPath, dirent.name)));
+                //    files.push({
+                //    fileType: "dir",
+                //    dir: path.join(dirPath, dirent.name),
+                //    name: dirent.name,
+                //});
             } else if (dirent.isFile()) {
                 // File処理
                 if ([".txt", ".md"].includes(path.extname(dirent.name))) {
@@ -504,11 +506,11 @@ export class NovelCompiler {
     }
 }
 
-type FileInfo = {
-    fileType?: string;
-    dir?: string;
-    name?: string;
-};
+//type FileInfo = {
+//    fileType?: string;
+//    dir?: string;
+//    name?: string;
+//};
 
 type DocInfo = {
     docType?: string;

@@ -24,11 +24,13 @@ export const getFilePaths = (dirPath: string, fileTypes: string[] = ['.txt']): F
             // Directory処理
             // NOTE: 現状は指定フォルダ内のファイルのみ取得。
             // TODO: 再帰的処理で深い階層まで読めるように
-            files.push({
-                fileType: "dir",
-                dir: path.join(dirPath, dirent.name),
-                name: dirent.name,
-            });
+            files.push(...getFilePaths(path.join(dirPath, dirent.name), fileTypes));
+            console.log(dirent.name);
+            //files.push({
+            //    fileType: "dir",
+            //    dir: path.join(dirPath, dirent.name),
+            //    name: dirent.name,
+            //});
         } else if (dirent.isFile()) {
             // File処理
             if (fileTypes.includes(path.extname(dirent.name))) {
