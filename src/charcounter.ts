@@ -31,7 +31,8 @@ export class CharCounter {
         let total = 0;
         textFiles.forEach((file) => {
           const contents = fs.readFileSync(file).toString();
-          total += contents.length;
+          const compText = this._compileText(contents);
+          total += this._countText(compText);
         });
 
         this.show(count, total);
